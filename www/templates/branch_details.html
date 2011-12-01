@@ -1,0 +1,11 @@
+$def with(branch, mapping_changes)
+
+<h2 id="branch_header">Branch Details <small>$branch</small></h2>
+    <p id="changelist_header"  style="float: right; margin-right:40px; ">Viewing the last <span class="btn small $('success' if len(mapping_changes) <= 5 else None)">5</span> <span class=" small btn $('success' if (len(mapping_changes) > 5 and len(mapping_changes) <= 10) else None)">10</span> <span class="btn small $('success' if len(mapping_changes) > 10 else None )">50</span> changelists</p>
+    <div class="span9">
+	<table class="zebra-striped">
+	    <thead><tr><th>Changelist</th><th>Date</th><th>User</th><th>Message</th></tr></thead>
+	    $for c in mapping_changes:
+		<tr><td>$c[0]</td><td>$c[1]</td><td>$c[2]</td><td>$c[3]</td></tr>
+	</table>
+    </div>

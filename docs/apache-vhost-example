@@ -1,0 +1,14 @@
+# the following is an apache vhost example to serve the fabric web.py app
+
+<VirtualHost 1.1.1.1:80>
+    ServerAdmin web@master.com
+    DocumentRoot /home/httpd/empty
+    ServerName orimono.internal.com
+    ErrorLog /home/httpd/logs/orimono.internal.com/error_log
+    CustomLog /home/httpd/logs/orimono.internal.com/access_log sessioning
+    AddType text/html .py
+    WSGIScriptAlias / /home/httpd/sites/orimono/www/app.py/
+    Alias /static /home/httpd/sites/orimono/www/static
+    WSGIDaemonProcess uzume-orimono user=uzume group=uzume python-path=/home/httpd/sites/orimono/www:/home/httpd/sites/orimono/ home=/home/httpd/sites/orimono/www processes=10 threads=1 maximum-requests=1000
+    WSGIProcessGroup uzume-orimono
+</VirtualHost>

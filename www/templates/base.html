@@ -1,0 +1,58 @@
+$def with(content)
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Uzume Orimono</title>
+    <script type="text/javascript">document.domain = document.domain;</script>
+    <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-alerts.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="/static/js/spin.min.js"></script>
+  	<script type="text/javascript" src="https://$orbited_host:$orbited_port/static/Orbited.js"></script>
+
+    <script type="text/javascript" src="/static/js/comet.js"></script>
+
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/skin.css" rel="stylesheet">
+    
+    $if content.jsfiles:
+        $for f in content.jsfiles.split():
+            <script type="text/javascript" src="$f"></script>
+  </head>
+
+  <body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="#">Uzume Orimono</a>
+          <ul class="nav">
+            $if content.logged == "true":
+                <li class="active"><a href="#">Dashboard</a></li>
+                <li><a href="#about">Help</a></li>
+          </ul>
+            $if content.logged == "true":
+                <form action="/logout/" class="pull-right">
+                <button class="btn" type="submit">Logout</button>
+                </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="content">
+        $:content
+        </div>
+   
+
+      <footer>
+        <p>&copy; 360Ed, Inc. 2011</p>
+      </footer>
+
+    </div> <!-- /container -->
+    <div id="loading"></div>
+  </body>
+</html>

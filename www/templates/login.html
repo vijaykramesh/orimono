@@ -1,0 +1,29 @@
+$def with(error)
+$var jsfiles: /static/js/dashboard.js
+$var logged: false
+
+
+$if error:
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+           jQuery('.alert-message').show().alert();
+        });
+    </script>
+    
+<div class="content">
+    <div class="page-header">
+      <h1>Login to Uzume Orimono<small></small></h1>
+    </div>
+    <div class="alert-message fade in error" style="display:none;"><a class="close" href="#">×</a>There was an error with your submission</div>
+    <div class="row">
+      <div class="span14" id="main">
+        <form action="/login/" class="form-stacked" method="post">
+            <div style="text-align:center;">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <div class="actions"><input type="submit" class="btn primary" value="Login"></div></div>
+        </form>
+      </div>
+    </div>
+     
+</div>

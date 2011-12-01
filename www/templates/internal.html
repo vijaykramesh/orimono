@@ -1,0 +1,148 @@
+$def with(mapping_name, mapping_changes, branch, local_mapping, available_branches)
+$var jsfiles: /static/js/dashboard.js
+$var logged: true
+<script type="text/javascript">
+jQuery(document).ready(function(){
+    jQuery("table").tablesorter({ sortList: [[0,1]] });
+    jQuery('#changelist_header').find('.btn').bind('click', function(){ window.location = '/internal/?mapping_name=$mapping_name&n=' + jQuery(this).html(); });
+    jQuery('[mapping_name="$mapping_name"]').removeClass('primary').addClass('success');
+    
+    jQuery('.update_local').bind('click', function(){
+	jQuery('#loading').trigger('ajaxStart');
+	jQuery.ajax({
+	    type: 'POST',
+	    url: '/internal/update/',
+	    data: { mapping_name: '$mapping_name'},
+	    success: function(r){
+		jQuery('#action_messages').append(r['content']);
+		jQuery('.success-message').show().alert();
+		jQuery('#changelist').html(r['version']);
+		jQuery('#datetime').html(r['datetime']);
+		jQuery('#loading').trigger('ajaxStop');
+	    }
+	});
+    });
+    
+    jQuery('.change_local_mapping').bind('click', function(){
+	jQuery('#branches_modal').modal({ keyboard:true, backdrop:true, show: true });
+	jQuery('.change_local_mapping_btn').bind('click', function(){
+	    jQuery('#branches_modal').modal('hide');
+	    jQuery('#loading').trigger('ajaxStart');
+	    jQuery.ajax({
+		type: 'POST',
+		 url: '/internal/changemapping/',
+		 data: { mapping_name: '$mapping_name', new_branch: jQuery(this).attr('branch') },
+		 success: function(r){
+		     jQuery('#action_messages').append(r['content']);
+		     jQuery('.success-message').show().alert();
+		     jQuery('#changelist').html(r['version']);
+		     jQuery('#datetime').html(r['datetime']);
+		     jQuery('#branch_details').html(r['branch_details']);
+		     // rebind branch details number selectors
+		     jQuery('#changelist_header').find('.btn').bind('click', function(){ window.location = '/internal/?mapping_name=$mapping_name&n=' + jQuery(this).html(); });
+		     
+		     jQuery('#loading').trigger('ajaxStop');
+		}
+	    }); 
+	});
+    });
+    
+    jQuery('.restart_local_presence').bind('click', function(){
+	jQuery('#loading').trigger('ajaxStart');
+	jQuery.ajax({
+	    type: 'POST',
+	    url: '/internal/restartpresence/',
+	    data: { mapping_name: '$mapping_name' },
+	    success: function(r){
+		jQuery('#action_messages').append(r['content']);
+		jQuery('.success-message').show().alert();
+		jQuery('#loading').trigger('ajaxStop');
+	    }
+	});
+	    
+    });
+});
+</script>
+<div class="page-header">
+  <h1>$mapping_name <small></small></h1>
+</div>
+
+<div class="modal fade" style="display:none;" id="branches_modal">    
+    <div class="modal-header">
+	<a href="#" class="close">x</a>
+	<h3>Change Mapping</h3>
+    </div>
+    <div class="modal-body">
+	<p>Choose a branch to update $mapping_name to:</p>
+	<ul>
+	$for b in available_branches:
+	    <li style="padding: 5px 2px;"><a href="#" class="btn primary change_local_mapping_btn" branch="$b[0]">$b[0]</a></li>
+	</ul>
+    </div>
+    <div class="modal-footer"></div>
+</div>
+
+
+
+
+<div class="row">
+  <div class="span10" id="main">
+    <div class="row">
+	<div class="span9" id="action_messages"></div>
+	<div class="span10">
+	    <h2 id="status_header">Status</h2>
+	    <div class="span9">
+	    <p>Apache & Presence/DB status coming soon...</p>
+	    </div>
+	</div>
+	<div class="span10">
+	    <h2 id="actions_header">Details</h2>
+	    <div class="span9">
+		<p>
+		    Current Local Version: <span id="changelist">$local_mapping['changelist']</span><br />
+		    Last Updated: <span id="datetime">$local_mapping['datetime']</span><br />
+		</p>
+		
+	    </div>
+	</div>
+	<div class="span10">
+	    <h2 id="actions_header">Actions</h2>
+	    <div class="span9">
+		<p><a href="#" class="update_local btn primary">Update App</a>
+		<a href="#" class="change_local_mapping btn primary">Change Mapping</a>
+		<a href="#" class="restart_local_presence btn primary">Restart Presence</a>
+		</p>
+	    </div>
+	    
+	</div>
+	
+	<div class="span10" id="branch_details">
+	    <h2 id="branch_header">Branch Details <small>$branch</small></h2>
+	    <p id="changelist_header"  style="float: right; margin-right:40px; ">Viewing the last <span class="btn small $('success' if len(mapping_changes) <= 5 else None)">5</span> <span class=" small btn $('success' if (len(mapping_changes) > 5 and len(mapping_changes) <= 10) else None)">10</span> <span class="btn small $('success' if len(mapping_changes) > 10 else None )">50</span> changelists</p>
+	    <div class="span9">
+		<table class="zebra-striped">
+		    <thead><tr><th>Changelist</th><th>Date</th><th>User</th><th>Message</th></tr></thead>
+		    $for c in mapping_changes:
+			<tr><td>$c[0]</td><td>$c[1]</td><td>$c[2]</td><td>$c[3]</td></tr>
+		</table>
+	    </div>
+	</div>
+    </div>
+   
+  </div>
+  
+  <div class="span4">
+    <h3>Local Mappings</h3>
+        <ul class="unstyled">
+        $for m in local_mappings:
+            <li style="margin: 5px 0px;"><span class="btn primary local_mapping" mapping_name="$m">$m</span></li>
+        </ul>
+    <h3>External Mappings</h3>
+        <ul class="unstyled">
+        $for m in external_mappings:
+             <li style="margin: 5px 0px;"><span class="btn primary external_mapping" mapping_name="$m['site']">$m['site']</span></li>
+        </ul>
+  
+  </div>
+</div>
+     
